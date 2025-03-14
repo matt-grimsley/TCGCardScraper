@@ -1,12 +1,12 @@
 namespace TCGCardScraper;
 
 using Microsoft.Playwright;
-using TCGCardScraper.Models;
+using TCGCardScraper.Tcgplayer.Models;
 
 internal static class Formatting
 {
     private static readonly Configuration Config = Configuration.Instance;
-    internal static string GenerateCardSummary(Card card)
+    internal static string GenerateCardSummary(TcgplayerCard card)
     {
         var cardInfo = $"{card.Name?.FriendlyName} ({card.Name?.SetCode}) - {card.Listing?.ShortCondition}";
         var cardPrice = $"{card.Listing?.Price:F2}".PadLeft(6);
@@ -34,7 +34,7 @@ internal static class Formatting
         return $"{new string('-', leftPadding)}  {caption}  {new string('-', rightPadding)}";
     }
 
-    internal static string GenerateNoResultsSummary(IEnumerable<Card> cards)
+    internal static string GenerateNoResultsSummary(IEnumerable<TcgplayerCard> cards)
     {
         var distinctCardCount = cards
             .Select(card => card.Name?.FriendlyName)

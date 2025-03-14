@@ -2,18 +2,18 @@ namespace TCGCardScraper;
 
 using System.Diagnostics;
 using System.Text;
-using TCGCardScraper.Models;
+using TCGCardScraper.Tcgplayer.Models;
 
-internal readonly struct StoreCardPairing(string store, Card card)
+internal readonly struct StoreCardPairing(string store, TcgplayerCard card)
 {
     internal string StoreName { get; } = store;
-    internal Card Card { get; } = card;
+    internal TcgplayerCard Card { get; } = card;
 }
 
-internal readonly struct StoreCards(string store, IEnumerable<Card> cards)
+internal readonly struct StoreCards(string store, IEnumerable<TcgplayerCard> cards)
 {
     internal string StoreName { get; } = store;
-    internal IEnumerable<Card> Cards { get; } = cards;
+    internal IEnumerable<TcgplayerCard> Cards { get; } = cards;
     internal decimal TotalPrice => Cards.Sum(card => card.Listing?.Price ?? 0m);
     internal int DistinctCards => Cards.Select(card => card.Name?.FriendlyName).Distinct().Count();
 }
@@ -23,7 +23,7 @@ internal static class StoreMatchAnalyzer
     private static readonly Configuration Config = Configuration.Instance;
     private static readonly string ResultsFilePath = Path.Combine(Config.ResultsFilePath, Config.ResultsFileName);
 
-    internal static async Task Analyze(IEnumerable<Card> scrapeResults)
+    internal static async Task Analyze(IEnumerable<TcgplayerCard> scrapeResults)
     {
         Logger.Log(Logger.LogLevel.INFO, "StoreMatchAnalyzer analyzing...");
 
@@ -36,12 +36,12 @@ internal static class StoreMatchAnalyzer
 
     internal static void OpenResultsFile() => Process.Start("notepad.exe", ResultsFilePath);
 
-    private static IEnumerable<Card> ApplyFilters(IEnumerable<Card> scrapeResults) =>
+    private static IEnumerable<TcgplayerCard> ApplyFilters(IEnumerable<TcgplayerCard> scrapeResults) =>
         scrapeResults
             .Where(card => !Config.ExcludeDirectSellers || card.Seller?.IsDirectSeller == false)
             .Where(card => !Config.ForceFreeShipping || card.Shipping?.FreeOverMinimum == true);
 
-    private static IEnumerable<StoreCardPairing> PairResults(IEnumerable<Card> filteredResults) =>
+    private static IEnumerable<StoreCardPairing> PairResults(IEnumerable<TcgplayerCard> filteredResults) =>
         filteredResults
             .Select(card => new StoreCardPairing(card.Seller!.Name, card))
             .Tap(pair => Logger.Log(Logger.LogLevel.DEBUG, Formatting.GenerateCardSummary(pair.Card)));
@@ -54,7 +54,7 @@ internal static class StoreMatchAnalyzer
             .OrderByDescending(storeCards => storeCards.DistinctCards)
             .ThenBy(storeCards => storeCards.TotalPrice);
 
-    private static async Task WriteResultsFileAsync(IEnumerable<StoreCards> results, IEnumerable<Card> originalScrapeResults)
+    private static async Task WriteResultsFileAsync(IEnumerable<StoreCards> results, IEnumerable<TcgplayerCard> originalScrapeResults)
     {
         StringBuilder stringBuilder = new();
         stringBuilder.AppendLine(Formatting.GenerateFileSeparator())

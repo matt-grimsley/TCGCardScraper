@@ -1,6 +1,6 @@
-﻿namespace TCGCardScraper.Models;
+namespace TCGCardScraper.Tcgplayer.Models;
 
-internal class ShippingData
+internal sealed class TcgplayerShippingData
 {
     internal string Price { get; set; } = string.Empty;
     internal bool Included { get; set; }

@@ -3,7 +3,7 @@ namespace TCGCardScraper;
 using System.Globalization;
 using System.Web;
 using Microsoft.Playwright;
-using TCGCardScraper.Models;
+using TCGCardScraper.Tcgplayer.Models;
 using static TCGCardScraper.Logger;
 
 internal sealed class Scraper : IAsyncDisposable
@@ -11,7 +11,7 @@ internal sealed class Scraper : IAsyncDisposable
     private static readonly Configuration Config = Configuration.Instance;
 
     private readonly List<Uri> _scrapeRequestUris = [];
-    private readonly List<Card> _processedListings = [];
+    private readonly List<TcgplayerCard> _processedListings = [];
 
     private IPlaywright? _playwright;
     private IBrowser? _browser;
@@ -150,9 +150,9 @@ internal sealed class Scraper : IAsyncDisposable
         Log(LogLevel.TRACE, $"Requests loaded: {totalRequests}");
     }
 
-    private async Task<List<Card>> ProcessURLAsync(string url)
+    private async Task<List<TcgplayerCard>> ProcessURLAsync(string url)
     {
-        var listings = new List<Card>();
+        var listings = new List<TcgplayerCard>();
 
         await NavigateAsync(url);
 
@@ -163,7 +163,7 @@ internal sealed class Scraper : IAsyncDisposable
 
         foreach (var item in await GetPage().QuerySelectorAllAsync(".listing-item"))
         {
-            listings.Add(new Card()
+            listings.Add(new TcgplayerCard()
             {
                 Name = cardName,
                 Seller = await ScrapeSellerAsync(item),
@@ -252,11 +252,11 @@ internal sealed class Scraper : IAsyncDisposable
     private static int DetermineTotalNumberOfPages(int totalListings, int listingsPerPage = 50) => totalListings == 0 ? 0 : (int)Math.Ceiling((double)totalListings / listingsPerPage);
 
     #region Scraping
-    private static async Task<SellerData> ScrapeSellerAsync(IElementHandle item)
+    private static async Task<TcgplayerSellerData> ScrapeSellerAsync(IElementHandle item)
     {
         Log(LogLevel.DEBUG, "Scraping seller...");
 
-        var sellerData = new SellerData();
+        var sellerData = new TcgplayerSellerData();
 
         var name = await item.QuerySelectorAsync(".seller-info__name");
         sellerData.Name = name != null ? await name.InnerTextAsync() : "UNKNOWN";
@@ -285,11 +285,11 @@ internal sealed class Scraper : IAsyncDisposable
         return sellerData;
     }
 
-    private static async Task<ListingData> ScrapeListingAsync(IElementHandle item)
+    private static async Task<TcgplayerListingData> ScrapeListingAsync(IElementHandle item)
     {
         Log(LogLevel.DEBUG, "Scraping listing...");
 
-        var listingData = new ListingData();
+        var listingData = new TcgplayerListingData();
 
         var price = await item.QuerySelectorAsync(".listing-item__listing-data__info__price");
         listingData.Price = await Formatting.FormatListingItemPriceData(price!);
@@ -318,11 +318,11 @@ internal sealed class Scraper : IAsyncDisposable
         return listingData;
     }
 
-    private static async Task<ShippingData> ScrapeShippingAsync(IElementHandle item)
+    private static async Task<TcgplayerShippingData> ScrapeShippingAsync(IElementHandle item)
     {
         Log(LogLevel.DEBUG, "Scraping shipping...");
 
-        var shippingData = new ShippingData
+        var shippingData = new TcgplayerShippingData
         {
             Price = string.Empty,
             Included = false,

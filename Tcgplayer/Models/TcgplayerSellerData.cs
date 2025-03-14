@@ -1,6 +1,6 @@
-namespace TCGCardScraper.Models;
+namespace TCGCardScraper.Tcgplayer.Models;
 
-internal class SellerData
+internal sealed class TcgplayerSellerData
 {
     internal string Name { get; set; } = string.Empty;
     internal bool IsDirectSeller { get; set; }

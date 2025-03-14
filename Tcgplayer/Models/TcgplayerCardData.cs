@@ -1,6 +1,6 @@
-namespace TCGCardScraper.Models;
+namespace TCGCardScraper.Tcgplayer.Models;
 
-internal partial class CardData
+internal partial class TcgplayerCardData
 {
     private string? _friendlyName;
     internal string? FriendlyName

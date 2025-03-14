@@ -1,6 +1,6 @@
-namespace TCGCardScraper.Models;
+namespace TCGCardScraper.Tcgplayer.Models;
 
-internal class ListingData
+internal sealed class TcgplayerListingData
 {
     internal string Condition { get; set; } = string.Empty;
 

@@ -1,7 +1,9 @@
 namespace TCGCardScraper;
 
 using System.Text.RegularExpressions;
-using TCGCardScraper.Models;
+using TCGCardScraper.Moxfield.Models;
+using TCGCardScraper.Scryfall;
+using TCGCardScraper.Tcgplayer.Models;
 
 internal sealed partial class RegexParser
 {
@@ -42,7 +44,7 @@ internal sealed partial class RegexParser
     private static readonly Dictionary<string, string> FoilMap = new() { { "Foil", "*F*" } };
     #endregion
 
-    internal static CardData ParseCardName(string fullname)
+    internal static TcgplayerCardData ParseCardName(string fullname)
     {
         var parts = fullname.Split(" - ", 2, StringSplitOptions.TrimEntries);
 
@@ -50,7 +52,7 @@ internal sealed partial class RegexParser
         var set = parts.Length > 1 ? parts[1] : string.Empty;
         var setCode = CardNameSetCodeRegex().Match(set).Groups[1].Value;
 
-        return new CardData()
+        return new TcgplayerCardData()
         {
             FullName = fullname,
             FriendlyName = name,
