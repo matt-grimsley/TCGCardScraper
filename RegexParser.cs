@@ -12,7 +12,7 @@ internal sealed partial class RegexParser
     [GeneratedRegex(@"[<>:""/\|?*]")]
     private static partial Regex CardFriendlyNameRegex();
 
-    [GeneratedRegex(@"(\d+)\sListings")]
+    [GeneratedRegex(@"(\d{1,3}(?:,\d{3})*)\+?\sListings")]
     private static partial Regex ListingsCountRegex();
 
     #endregion
@@ -61,7 +61,7 @@ internal sealed partial class RegexParser
 
     internal static string ParseCardFriendlyName(string fullname) => CardFriendlyNameRegex().Replace(fullname, string.Empty);
 
-    internal static int ParseListingsCount(string text) => int.TryParse(ListingsCountRegex().Match(text).Groups[1].Value, out var value) ? value : 0;
+    internal static int ParseListingsCount(string text) => int.TryParse(ListingsCountRegex().Match(text).Groups[1].Value.Replace(",", ""), out var value) ? value : 0;
 
     internal static string ParseCondition(string condition)
     {
