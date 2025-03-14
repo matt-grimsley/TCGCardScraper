@@ -243,8 +243,7 @@ internal sealed class Scraper : IAsyncDisposable
 
     private async Task<int> GetListingsCount()
     {
-        var locator = GetPage().Locator("div.heading >> text=/\\d+\\sListings/");
-
+        var locator = GetPage().Locator("div.heading").Locator("text=/\\d{1,3}(,\\d{3})*\\+?\\sListings/");
         var elementText = await locator.TextContentAsync();
 
         return RegexParser.ParseListingsCount(elementText!);

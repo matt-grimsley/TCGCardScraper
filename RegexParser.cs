@@ -12,7 +12,7 @@ internal sealed partial class RegexParser
     [GeneratedRegex(@"[<>:""/\|?*]")]
     private static partial Regex CardFriendlyNameRegex();
 
-    [GeneratedRegex(@"(\d{1,3}(?:,\d{3})*)\+?\sListings")]
+    [GeneratedRegex(@"(\d{1,3},?\d{0,3})\+?\sListings")]
     private static partial Regex ListingsCountRegex();
 
     #endregion
